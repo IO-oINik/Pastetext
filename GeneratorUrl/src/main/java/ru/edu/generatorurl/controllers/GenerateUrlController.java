@@ -10,7 +10,7 @@ import ru.edu.generatorurl.models.ShortUrl;
 import ru.edu.generatorurl.services.GenerateUrlService;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 @RestController
 public class GenerateUrlController {
     private final GenerateUrlService generateUrlService;
