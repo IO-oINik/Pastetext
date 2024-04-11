@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ru.edu</groupId>
-    <artifactId>pasteMeta-service</artifactId>
+    <artifactId>paste-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>pasteMeta-service</name>
     <description>pasteMeta-service</description>
@@ -29,6 +29,11 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.5.0</version>
+        </dependency>
         <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>

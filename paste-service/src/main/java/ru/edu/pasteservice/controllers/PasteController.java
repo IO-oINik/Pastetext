@@ -1,6 +1,7 @@
 package ru.edu.pasteservice.controllers;
 
 import io.minio.errors.MinioException;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -26,6 +27,7 @@ import java.io.IOException;
 public class PasteController {
     private final PasteService pasteService;
 
+    @Operation(summary = "Получить пасту по ID")
     @GetMapping("/{paste-id}")
     public ResponseEntity<PasteResponse> getPaste(@PathVariable("paste-id") String pasteId) throws PasteNotFoundException, NoAccessException, PasteIsExpiredException, MinioException, IOException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -34,12 +36,14 @@ public class PasteController {
         return ResponseEntity.ok(pasteResponse);
     }
 
+    @Operation(summary = "Добавить новую пасту")
     @PostMapping("")
     public ResponseEntity<CreatedPasteResponse> createPaste(@RequestBody PasteRequest request) throws MinioException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.status(HttpStatus.CREATED).body(pasteService.createPaste(request, userDetails));
     }
 
+    @Operation(summary = "Удалить пасту по ID")
     @DeleteMapping("/{paste-id}")
     public ResponseEntity<MessageResponse> deletePaste(@PathVariable("paste-id") String pasteId) throws PasteNotFoundException, NoAccessException, MinioException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

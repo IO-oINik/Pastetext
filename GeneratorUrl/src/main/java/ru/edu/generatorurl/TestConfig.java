@@ -14,9 +14,8 @@ import ru.edu.generatorurl.services.GenerateUrlService;
 public class TestConfig {
     private final GenerateUrlService generateUrlService;
 
-    @Bean
     public CommandLineRunner commandLineRunner() throws GenerateUrlException {
-        for(int i = 0; i < 20_000; ++i) {
+        for(int i = 0; i < 1_000; ++i) {
             generateUrlService.generateUrl();
             log.info("URL generated ID=" + i);
         }
