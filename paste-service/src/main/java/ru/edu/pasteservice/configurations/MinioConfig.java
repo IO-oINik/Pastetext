@@ -21,10 +21,12 @@ public class MinioConfig {
     private String accessKey;
     @Value("${minio.keys.secret-key}")
     private String secretKey;
+    @Value("${minio.host}")
+    private String host;
 
     @Bean
     public MinioClient minioClient() throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        MinioClient minioClient = MinioClient.builder().endpoint("http://localhost:9000")
+        MinioClient minioClient = MinioClient.builder().endpoint(host)
                 .credentials(accessKey, secretKey).build();
         if(!minioClient.bucketExists(BucketExistsArgs.builder().bucket("pastes").build())) {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket("pastes").build());

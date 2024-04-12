@@ -1,14 +1,21 @@
 version: "3.9"
 
 services:
-  eureka-server:
-    container_name: eureka-server
-    build:
-      context: eureka-server
-      dockerfile: Dockerfile
-    image: eureka-server:latest
-    ports:
-      - "8761:8761"
+  db-GeneratorUrl:
+    image: postgres:alpine3.19
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: GeneratorUrl
+
+  db-paste-service:
+    image: postgres:alpine3.19
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: paste-service
 
   minio:
     container_name: minio
@@ -19,5 +26,38 @@ services:
     environment:
       - MINIO_ROOT_USER=root
       - MINIO_ROOT_PASSWORD=12345678
-      - MINIO_SERVER_ACCESS_KEY=BZBoSB7ab85niUgOtQdF
-      - MINIO_SERVER_SECRET_KEY=RKayUx8MKRccsHfHfIYSjo9duFUUX0loZNI4GT5J
+
+  eureka-server:
+    container_name: eureka-server
+    build:
+      context: eureka-server
+      dockerfile: Dockerfile
+    image: eureka-server:latest
+    ports:
+      - "8761:8761"
+
+  GeneratorUrl:
+    container_name: GeneratorUrl
+    build:
+      context: GeneratorUrl
+      dockerfile: Dockerfile
+    image: generator-url:latest
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db-GeneratorUrl
+      - eureka-server
+
+  paste-service:
+    container_name: paste-service
+    build:
+      context: paste-service
+      dockerfile: Dockerfile
+    image: paste-service:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db-paste-service
+      - minio
+      - GeneratorUrl
+      - eureka-server
