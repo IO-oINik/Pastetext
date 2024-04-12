@@ -3,17 +3,22 @@ package ru.edu.pasteservice.services;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import ru.edu.pasteservice.repositories.InvalidatedTokenRepository;
 
 import java.time.Instant;
 import java.util.Date;
 
+@RequiredArgsConstructor
 @Service
 public class JwtService {
     @Value("${jwt.token.key}")
     private String key;
+
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
 
     public String extractUsername(String jwt) {
         DecodedJWT decodedJWT = decodeJwt(jwt);
@@ -36,10 +41,10 @@ public class JwtService {
 
     public boolean isJwtValid(String jwt, UserDetails userDetails) {
         String username = extractUsername(jwt);
-        return username.equals(userDetails.getUsername()) && !isJwtExpired(jwt);
+        return username.equals(userDetails.getUsername()) && !isJwtExpired(jwt) && !invalidatedTokenRepository.existsByToken(jwt);
     }
 
-    private boolean isJwtExpired(String jwt) {
+    public boolean isJwtExpired(String jwt) {
         DecodedJWT decodedJWT = decodeJwt(jwt);
         return decodedJWT.getExpiresAt().before(Date.from(Instant.now()));
     }
@@ -47,4 +52,5 @@ public class JwtService {
     private DecodedJWT decodeJwt(String jwt) {
         return JWT.require(Algorithm.HMAC256(key.getBytes())).build().verify(jwt);
     }
+
 }

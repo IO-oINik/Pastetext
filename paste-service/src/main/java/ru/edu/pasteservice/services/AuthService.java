@@ -3,13 +3,16 @@ package ru.edu.pasteservice.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.edu.pasteservice.models.DTOs.requests.AuthenticateRequest;
 import ru.edu.pasteservice.models.DTOs.requests.RegisterRequest;
 import ru.edu.pasteservice.models.DTOs.responses.AuthenticationResponse;
+import ru.edu.pasteservice.models.InvalidatedToken;
 import ru.edu.pasteservice.models.Role;
 import ru.edu.pasteservice.models.User;
+import ru.edu.pasteservice.repositories.InvalidatedTokenRepository;
 import ru.edu.pasteservice.repositories.UserRepository;
 
 @RequiredArgsConstructor
@@ -19,6 +22,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
 
 
     public AuthenticationResponse registration(RegisterRequest registerRequest) {
@@ -39,5 +43,9 @@ public class AuthService {
         ));
         User user = userRepository.findByUsername(authenticateRequest.getUsername()).orElseThrow();
         return new AuthenticationResponse(jwtService.generateJwt(user));
+    }
+
+    public void logout(String token) {
+        invalidatedTokenRepository.save(new InvalidatedToken(token));
     }
 }
